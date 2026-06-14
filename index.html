@@ -389,14 +389,10 @@
     if (index === 0) {
       gapTd.textContent = '—';
     } else {
-      const prevStop = entries[index - 1].stopTime;
-      if (prevStop) {
-        const gapMs = entry.startTime - prevStop;
-        gapTd.textContent = formatDuration(gapMs);
-        if (gapMs <= 5 * 60 * 1000) gapTd.classList.add('cell-green');
-      } else {
-        gapTd.textContent = '—';
-      }
+      const prevStart = entries[index - 1].startTime;
+      const gapMs = entry.startTime - prevStart;
+      gapTd.textContent = formatDuration(gapMs);
+      if (gapMs < 5 * 60 * 1000) gapTd.classList.add('cell-green');
     }
 
     tr.appendChild(startTd);
@@ -437,7 +433,7 @@
     const durationMs = now - currentRow.entry.startTime;
     currentRow.durTd.textContent = formatDuration(durationMs);
     currentRow.durTd.classList.remove('pending');
-    if (durationMs <= 60 * 1000) currentRow.durTd.classList.add('cell-green');
+    if (durationMs >= 60 * 1000) currentRow.durTd.classList.add('cell-green');
 
     currentRow = null;
     updateStatus();
@@ -484,8 +480,8 @@
       const stop = entry.stopTime ? formatTime(entry.stopTime) : '';
       const duration = entry.stopTime ? formatDuration(entry.stopTime - entry.startTime) : '';
       let gap = '';
-      if (index > 0 && entries[index - 1].stopTime) {
-        gap = formatDuration(entry.startTime - entries[index - 1].stopTime);
+      if (index > 0) {
+        gap = formatDuration(entry.startTime - entries[index - 1].startTime);
       }
       rows.push([start, stop, duration, gap]);
     });
